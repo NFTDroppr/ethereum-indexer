@@ -1,12 +1,18 @@
 package com.rarible.protocol.nft.core.model
 
 import com.rarible.ethereum.domain.EthUInt256
+import com.rarible.protocol.dto.ItemIdDto
 import scalether.domain.Address
 
 data class ItemId(
     val token: Address,
     val tokenId: EthUInt256
 ) {
+    constructor(dto: ItemIdDto): this(
+        token = dto.token,
+        tokenId = EthUInt256.of(dto.tokenId)
+    )
+
     val stringValue: String
         get() = "$token:$tokenId"
 

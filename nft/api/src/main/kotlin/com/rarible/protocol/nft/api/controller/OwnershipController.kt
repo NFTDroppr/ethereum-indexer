@@ -2,12 +2,13 @@ package com.rarible.protocol.nft.api.controller
 
 import com.rarible.core.common.convert
 import com.rarible.protocol.dto.*
+import com.rarible.protocol.dto.parser.AddressParser
+import com.rarible.protocol.nft.api.converter.OwnershipIdConverter
 import com.rarible.protocol.nft.api.domain.OwnershipContinuation
 import com.rarible.protocol.nft.api.service.ownership.OwnershipApiService
 import org.springframework.core.convert.ConversionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import scalether.domain.Address
 import java.math.BigInteger
 
 @RestController
@@ -25,7 +26,7 @@ class OwnershipController(
     }
 
     override suspend fun getNftOwnershipById(ownershipId: String): ResponseEntity<NftOwnershipDto> {
-        val result = ownershipApiService.get(conversionService.convert(ownershipId))
+        val result = ownershipApiService.get(OwnershipIdConverter.convert(ownershipId))
         return ResponseEntity.ok(result)
     }
 
@@ -37,7 +38,7 @@ class OwnershipController(
     ): ResponseEntity<NftOwnershipsDto> {
         val filter = NftOwnershipFilterByItemDto(
             defaultSorting,
-            Address.apply(contract),
+            AddressParser.parse(contract),
             BigInteger(tokenId)
         )
         val result = getItems(filter, continuation, size)

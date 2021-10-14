@@ -21,7 +21,7 @@ class ActivityController(
     private val logger = LoggerFactory.getLogger(javaClass)
 
     override suspend fun getNftActivities(
-        request: NftActivityFilterDto,
+        nftActivityFilterDto: NftActivityFilterDto,
         continuation: String?,
         size: Int?,
         sort: ActivitySortDto?
@@ -29,7 +29,7 @@ class ActivityController(
         val requestSize = size.limit()
         val continuationDto = ContinuationMapper.toActivityContinuationDto(continuation)
         val activitySort = sort?.let { ActivitySortConverter.convert(it) } ?: ActivitySort.LATEST_FIRST
-        val historyFilters = historyFilterConverter.convert(activitySort, request, continuationDto)
+        val historyFilters = historyFilterConverter.convert(activitySort, nftActivityFilterDto, continuationDto)
         logger.info("Filters: ${historyFilters.joinToString { it.javaClass.simpleName }}")
 
         val result = nftActivityService

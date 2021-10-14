@@ -4,12 +4,12 @@ import com.rarible.core.common.convert
 import com.rarible.protocol.dto.NftCollectionDto
 import com.rarible.protocol.dto.NftCollectionsDto
 import com.rarible.protocol.dto.NftTokenIdDto
+import com.rarible.protocol.dto.parser.AddressParser
 import com.rarible.protocol.nft.api.service.colllection.CollectionService
 import com.rarible.protocol.nft.core.model.TokenFilter
 import org.springframework.core.convert.ConversionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import scalether.domain.Address
 import java.lang.Integer.min
 
 @RestController
@@ -22,7 +22,7 @@ class CollectionController(
         collection: String
     ): ResponseEntity<NftCollectionDto> {
         val result = collectionService
-            .get(Address.apply(collection))
+            .get(AddressParser.parse(collection))
             .let { conversionService.convert<NftCollectionDto>(it) }
         return ResponseEntity.ok(result)
     }
@@ -42,7 +42,7 @@ class CollectionController(
         size: Int?
     ): ResponseEntity<NftCollectionsDto> {
         val filter = TokenFilter.ByOwner(
-            Address.apply(owner),
+            AddressParser.parse(owner),
             continuation,
             size.limit()
         )
@@ -54,8 +54,8 @@ class CollectionController(
         collection: String,
         minter: String
     ): ResponseEntity<NftTokenIdDto> {
-        val collectionAddress = Address.apply(collection)
-        val minterAddress = Address.apply(minter)
+        val collectionAddress = AddressParser.parse(collection)
+        val minterAddress = AddressParser.parse(minter)
         val nextTokenId = collectionService.generateId(collectionAddress, minterAddress)
         val result = conversionService.convert<NftTokenIdDto>(nextTokenId)
         return ResponseEntity.ok(result)
